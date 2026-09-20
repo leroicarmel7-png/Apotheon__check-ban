@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>APOTHEON CHECK BAN</title>
+<style>body{background:#0f0f0f;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
+.card{background:#1a1a1a;padding:30px;border-radius:16px;border:1px solid #333;width:90%;max-width:400px;text-align:center}
+input{width:100%;padding:14px;border-radius:10px;border:1px solid #444;background:#222;color:#fff;margin:15px 0}
+button{width:100%;padding:14px;background:#fff;color:#000;border:0;border-radius:10px;font-weight:bold}
+#res{margin-top:15px;padding:10px;border-radius:8px;display:none}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>♦ APOTHEON ♦<br>CHECK BAN</h2>
+<input id="phone" placeholder="+228...">
+<button onclick="check()">CHECK RÉEL</button>
+<div id="res"></div>
+</div>
+<script>
+async function check(){
+ const p=document.getElementById('phone').value;
+ const r=document.getElementById('res');
+ r.style.display='block'; r.innerHTML='Vérification réelle...';
+ try{
+  const d=await fetch('/api/check/'+encodeURIComponent(p)).then(x=>x.json());
+  r.innerHTML=`Num: ${d.phone}<br>Statut: ${d.status}<br>${d.message||''}`;
+ }catch(e){r.innerHTML='Erreur serveur';}
+}
+</script>
+</body>
+</html>
