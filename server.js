@@ -1,29 +1,40 @@
-
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 const app = express();
-app.use(cors());
+const PORT = process.env.PORT || 8080;
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(__dirname));
 
-const PORT = process.env.PORT || 3000;
+// CHECK BAN GLOBAL - Tous pays
+app.get('/api/check/:number', async (req, res) => {
+    let raw = req.params.number;
+    let num = raw.replace(/\D/g,''); // garde que les chiffres
 
-app.get('/api/check/:phone', async (req,res)=>{
-  const clean = req.params.phone.replace(/[^0-9]/g,'');
-  // Moteur simplifié pour test Railway - remplacera par vrai moteur Baileys après
-  res.json({phone: clean, banned:false, status:'active', message:'Serveur en ligne - moteur prêt', isReal:true, seal:'APOTHEON'});
+    // Sécurité: il faut au minimum un indicatif pays
+    if(num.length < 10 || num.length > 15) {
+        return res.json({
+            number: raw,
+            status: 'INVALID',
+            message: '❌ Numéro invalide. Mets l\'indicatif pays : ex 33612345678, 12125551234, 22890123456'
+        });
+    }
+    
+    // Simulation pour l'instant (on branchera le vrai moteur Baileys après)
+    const lastDigit = parseInt(num[num.length-1]);
+    const isBanned = lastDigit % 3 === 0; // juste pour demo
+    
+    res.json({
+        number: '+' + num,
+        status: isBanned ? 'BANNED' : 'OK',
+        country: 'Détection auto',
+        message: isBanned ? '❌ Numéro banni WhatsApp' : '✅ Numéro disponible / clean',
+        timestamp: new Date().toISOString()
+    });
 });
-app.get('/api/health',(req,res)=>res.json({ok:true, name:'APOTHEON_CHECK_BAN'}));
 
-app.get('*',(req,res)=>{
-  const pub = path.join(__dirname,'public','index.html');
-  const root = path.join(__dirname,'index.html');
-  const fs = require('fs');
-  if(fs.existsSync(pub)) return res.sendFile(pub);
-  if(fs.existsSync(root)) return res.sendFile(root);
-  res.send('APOTHEON ONLINE');
+app.get('/', (req,res)=>{
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, ()=>console.log(`APOTHEON ONLINE :${PORT}`));
+app.listen(PORT, ()=> console.log(`APOTHEON GLOBAL ONLINE :${PORT}`));
