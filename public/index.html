@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -407,7 +406,7 @@ body::after {
       VÉRIFICATION DE STATUT WHATSAPP
     </div>
     <div class="subkicker">
-      RÉSULTATS NON CONFIRMÉS SIGNALÉS
+      MOTEUR DE JUGEMENT 7UCG
     </div>
 
     <div class="ornament">✧ ━━━━━ ✧</div>
@@ -472,7 +471,7 @@ body::after {
         </div>
       </div>
 
-      <div class="signature">
+      <div class="signature" id="signature-text">
         Off by 𓆩🌹 VAELMOR FAMILY 🕯️𓆪
       </div>
     </section>
@@ -496,34 +495,25 @@ const statusLabel = document.getElementById('status');
 const resultTitle = document.getElementById('result-title');
 const resultMessage = document.getElementById('result-message');
 const symbol = document.getElementById('symbol');
+const signatureText = document.getElementById('signature-text');
 
-function displayResult(status, phone, message) {
-  const details = {
-    INVALID_NUMBER: {
-      title: 'NUMÉRO INVALIDE',
-      message: 'Vérifie le numéro et son indicatif international.',
-      symbol: '!'
-    },
-    INDETERMINATE: {
-      title: 'STATUT INDÉTERMINÉ',
-      message: 'Aucune preuve fiable ne permet de confirmer le statut de bannissement. Vérifie le compte directement dans WhatsApp.',
-      symbol: '✧'
-    },
-    ERROR: {
-      title: 'VÉRIFICATION IMPOSSIBLE',
-      message: 'Le serveur n’a pas pu traiter la demande. Aucun verdict n’a été inventé.',
-      symbol: '!'
-    }
-  };
-
-  const data = details[status] || details.INDETERMINATE;
-
+function renderVerdict(phone, verdictData, fallbackInfo) {
   phoneResult.textContent = phone || 'Numéro non disponible';
   timeResult.textContent = new Date().toLocaleTimeString('fr-FR');
-  statusLabel.textContent = status;
-  resultTitle.textContent = data.title;
-  resultMessage.textContent = message || data.message;
-  symbol.textContent = data.symbol;
+  
+  if (verdictData) {
+    statusLabel.textContent = verdictData.badge || 'VERDICT RENDU';
+    symbol.textContent = verdictData.code || '✧';
+    resultTitle.textContent = verdictData.title || 'VERDICT VAELMOR';
+    resultMessage.textContent = verdictData.quote || fallbackInfo;
+    signatureText.textContent = verdictData.off || 'Off by 𓆩🌹 VAELMOR FAMILY 🕯️𓆪';
+  } else {
+    statusLabel.textContent = 'JUGEMENT';
+    symbol.textContent = '✧';
+    resultTitle.textContent = 'RAPPORT CIBLE';
+    resultMessage.textContent = fallbackInfo || 'Analyse terminée.';
+    signatureText.textContent = 'Off by 𓆩🌹 VAELMOR FAMILY 🕯️𓆪';
+  }
 
   result.hidden = false;
 }
@@ -533,50 +523,61 @@ form.addEventListener('submit', async (event) => {
 
   const digits = input.value.replace(/\D/g, '');
 
-  if (digits.length < 8 || digits.length > 15) {
-    displayResult(
-      'INVALID_NUMBER',
-      digits ? '+' + digits : '—'
-    );
+  if (digits.length < 7) {
+    renderVerdict('+' + (digits || '—'), null, "Numéro invalide. Veuillez fournir un format international valide.");
     return;
   }
 
   submit.disabled = true;
-  submit.textContent = '[ VÉRIFICATION EN COURS… ]';
+  submit.textContent = '[ JUGEMENT EN COURS… ]';
 
-  displayResult(
-    'INDETERMINATE',
+  renderVerdict(
     '+' + digits,
-    'Connexion au serveur… le statut du compte n’est pas encore confirmé.'
+    {
+      badge: '7UCG • ANALYSE',
+      code: '⌛',
+      title: 'CONSULTATION EN COURS',
+      quote: 'Le moteur Vaelmor interroge les lignes. Le verdict sera scellé dans un instant.'
+    },
+    'Connexion aux serveurs...'
   );
 
   try {
-    const response = await fetch(
-      '/api/check/' + encodeURIComponent(digits),
-      { headers: { 'Accept': 'application/json' } }
-    );
+    const response = await fetch(`/api/isBanned?number=${encodeURIComponent(digits)}`, {
+      headers: { 'Accept': 'application/json' }
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
-      displayResult(
-        data.status || 'ERROR',
-        data.phone || '+' + digits,
-        data.message || 'La demande n’a pas pu être traitée.'
+      renderVerdict(
+        data.number || '+' + digits,
+        {
+          badge: 'ERREUR',
+          code: '!',
+          title: 'ÉCHEC DE LA REQUÊTE',
+          quote: data.error || 'La requête n’a pas pu aboutir.'
+        }
       );
       return;
     }
 
-    displayResult(
-      data.status || 'INDETERMINATE',
-      data.phone || '+' + digits,
-      data.message
+    // Exploitation des retours de ton API backend /api/isBanned
+    renderVerdict(
+      data.number,
+      data.vaelmor_verdict,
+      data.info || data.details || 'Jugement rendu par la famille Vaelmor.'
     );
-  } catch {
-    displayResult(
-      'ERROR',
+
+  } catch (err) {
+    renderVerdict(
       '+' + digits,
-      'Impossible de joindre le serveur. Vérifie ta connexion puis réessaie.'
+      {
+        badge: 'ERREUR RÉSEAU',
+        code: '✕',
+        title: 'CONNEXION INTERROMPUE',
+        quote: 'Impossible de joindre le serveur. Vérifie ta connexion puis réessaie.'
+      }
     );
   } finally {
     submit.disabled = false;
