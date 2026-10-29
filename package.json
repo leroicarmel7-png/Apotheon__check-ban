@@ -1,12 +1,13 @@
 {
-"name": "vaelmor-verdict",
-"version": "2.1.0",
-"description": "VAELMOR VERDICT - Interface de vérification du statut WhatsApp",
-"main": "server.js",
-"scripts": {
-"start": "node server.js"
-},
-"dependencies": {
-"express": "^4.18.2"
+  "name": "vaelmor-verdict",
+  "version": "2.1.0",
+  "description": "VAELMOR VERDICT - Interface de vérification du statut WhatsApp",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
 }
-}
+
