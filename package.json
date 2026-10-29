@@ -1,1 +1,14 @@
-{"name":"vaelmor-family","version":"2.1.0","main":"server.js","scripts":{"start":"node server.js"},"dependencies":{"express":"^4.18.2"}}
+
+{
+  "name": "vaelmor-family",
+  "version": "2.2.0",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "libphonenumber-js": "^1.11.20"
+  }
+}
