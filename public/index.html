@@ -4,165 +4,593 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080809">
 <title>VAELMOR VERDICT</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#07070a;color:#eee;font-family:monospace;min-height:100vh;position:relative}
-body:before{content:"";position:fixed;inset:0;background:url("vaelmor-family.jpg") center 35%/cover no-repeat;opacity:.2;z-index:-2}
-body:after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.76);z-index:-1;pointer-events:none}
-.top{display:flex;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid #333}
-.j{font-size:9px;letter-spacing:4px;color:#888;text-align:center;margin:22px 0}
-.t{font-size:clamp(20px,5vw,28px);letter-spacing:4px;text-align:center;color:#ddd;margin:10px 0}
-.c{width:160px;height:160px;margin:0 auto 16px;border-radius:50%;border:2px solid #555;overflow:hidden;background:#111}
-.c img{width:100%;height:100%;object-fit:cover;display:block}
-.s{font-size:9px;letter-spacing:3px;color:#999;text-align:center;line-height:17px;margin-bottom:20px}
-.card{max-width:420px;margin:0 auto 24px;background:rgba(14,14,17,.94);border:1px solid #444;border-radius:20px;padding:16px}
-.r{display:flex;justify-content:space-between;gap:8px;font-size:8px;letter-spacing:2px;color:#aaa;margin-bottom:12px}
-.i{display:flex;background:#050507;border:1px solid #333;border-radius:14px;margin-bottom:12px}
-.i span{padding:16px 12px;font-size:12px;color:#aaa;border-right:1px solid #333}
-.i input{flex:1;min-width:0;background:transparent;border:0;color:#fff;padding:16px;font-size:15px;outline:0}
-.b{width:100%;min-height:52px;border-radius:14px;border:1px solid #666;background:linear-gradient(#3a3a3e,#151518);color:#eee;letter-spacing:3px;font-size:11px;cursor:pointer;padding:12px}
-.b:disabled{opacity:.6}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);display:none;place-items:center;z-index:99;padding:16px}
-.ov.show{display:grid}
-.v{width:100%;max-width:380px;background:#0f0f12;border:1px solid #444;border-radius:20px;padding:20px;position:relative;animation:p .3s}
-@keyframes p{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
-.x{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:#1a1a1e;border:1px solid #444;color:white;cursor:pointer}
-.tt{font-size:15px;letter-spacing:1px;color:#ddd;margin:14px 0}
-.qq{color:#ccc;line-height:22px;margin:10px 0;overflow-wrap:anywhere}
-.off{font-size:9px;letter-spacing:1px;color:#aaa;margin-top:16px}
-#bd{font-size:9px;padding:7px 10px;border:1px solid #555;border-radius:99px;display:inline-block;color:#ddd;margin-top:8px}
-@media(max-width:460px){.card{margin-left:12px;margin-right:12px}.j{letter-spacing:2px}.top{font-size:10px}}
-</style>
-</head>
-<body>
-
-<div class="top">
-  <div><b style="letter-spacing:2px;font-size:10px">VAELMOR FAMILY</b></div>
-  <div style="font-size:9px;color:#aaa">VAELMOR VERDICT</div>
-</div>
-
-<div class="j">JUGEMENT SUPRÊME</div>
-<div class="t">VAELMOR VERDICT</div>
-
-<div class="c">
-  <img src="icon.png" alt="VAELMOR FAMILY">
-</div>
-
-<div class="s">
-  VÉRIFICATION DE STATUT WHATSAPP<br>
-  RÉSULTATS NON CONFIRMÉS SIGNALÉS
-</div>
-
-<div class="card">
-  <div class="r">
-    <span>CIBLE À JUGER</span>
-    <span>VLM</span>
-  </div>
-
-  <div class="i">
-    <span>INTL</span>
-    <input id="n" inputmode="tel" placeholder="Numéro international" aria-label="Numéro de téléphone">
-    <span id="clear" style="cursor:pointer">✕</span>
-  </div>
-
-  <button class="b" id="j">[ JUGER LA CIBLE ]</button>
-
-  <div style="font-size:8px;letter-spacing:2px;color:#777;text-align:center;margin-top:12px">
-    VAELMOR • VERDICT • VÉRIFICATION
-  </div>
-</div>
-
-<div class="ov" id="o">
-  <div class="v">
-    <button class="x" id="cx" aria-label="Fermer">✕</button>
-    <div style="font-size:9px;letter-spacing:3px;color:#999">VERDICT RENDU</div>
-    <div id="ph" style="font-size:11px;margin:8px 0">—</div>
-    <div id="bd">EN ATTENTE</div>
-    <div class="tt" id="ti">VÉRIFICATION</div>
-    <div class="qq" id="qt">En attente d'une réponse.</div>
-    <div class="off" id="of">𓆩🌹 𝗩𝗔𝗘𝗟𝗠𝗢𝗥 𝗙𝗔𝗠𝗜𝗟𝗬 🕯️𓆪</div>
-  </div>
-</div>
-
-<script>
-const verdicts = {
-  INVALID_NUMBER: {
-    title: 'NUMÉRO INVALIDE',
-    message: 'Vérifie le numéro et son indicatif international.'
-  },
-  INDETERMINATE: {
-    title: 'STATUT INDÉTERMINÉ',
-    message: 'Aucune preuve suffisante pour confirmer le statut du compte. Va dans WhatsApp pour vérifier le message affiché par l’application.'
-  }
-};
-
-const overlay = document.getElementById('o');
-const numberInput = document.getElementById('n');
-const button = document.getElementById('j');
-
-function showResult(status, phone, message) {
-  const result = verdicts[status] || verdicts.INDETERMINATE;
-
-  document.getElementById('ti').textContent = result.title;
-  document.getElementById('qt').textContent = message || result.message;
-  document.getElementById('bd').textContent = status;
-  document.getElementById('ph').textContent =
-    phone + ' • ' + new Date().toLocaleTimeString();
-
-  overlay.classList.add('show');
+:root {
+  --silver: #c8c8ce;
+  --muted: #92929b;
+  --line: rgba(210,210,220,.48);
+  --panel: rgba(5,5,8,.88);
 }
 
-button.addEventListener('click', async () => {
-  const digits = numberInput.value.replace(/\D/g, '');
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  if (!digits) {
-    showResult('INVALID_NUMBER', '—');
+html {
+  min-height: 100%;
+  background: #07070a;
+}
+
+body {
+  min-height: 100vh;
+  color: #f3f3f5;
+  font-family: "Courier New", monospace;
+  background: #07070a;
+  isolation: isolate;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    url("vaelmor-family.png")
+    center center / cover no-repeat;
+  opacity: .53;
+  pointer-events: none;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.45),
+    rgba(0,0,0,.72) 55%,
+    rgba(0,0,0,.9)
+  );
+  pointer-events: none;
+}
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px 14px 28px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #eee;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.brand-mark {
+  color: var(--silver);
+  font-size: 17px;
+}
+
+.top-right {
+  color: #c5c5cc;
+  text-align: right;
+  font-size: 8px;
+}
+
+.hero {
+  width: 100%;
+  max-width: 720px;
+  margin: clamp(180px, 35vh, 330px) auto 0;
+  text-align: center;
+}
+
+.kicker {
+  font-size: clamp(10px, 2.4vw, 13px);
+  letter-spacing: 3px;
+  line-height: 1.8;
+  color: #f0f0f4;
+  text-shadow: 0 1px 8px #000;
+}
+
+.subkicker {
+  margin-top: 8px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #c6c6ce;
+}
+
+.ornament {
+  color: #dddde4;
+  margin: 15px auto;
+  font-size: 17px;
+  text-shadow: 0 0 12px #fff;
+}
+
+.card {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  box-shadow: 0 0 24px rgba(0,0,0,.7);
+  backdrop-filter: blur(8px);
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #dddde4;
+}
+
+.target {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.target-icon {
+  font-size: 17px;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  margin-top: 14px;
+  background: rgba(0,0,0,.76);
+  border: 1px solid #777780;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.intl {
+  padding: 16px 12px;
+  border-right: 1px solid #55555e;
+  font-size: 11px;
+  color: #e5e5ea;
+  white-space: nowrap;
+}
+
+.input-row input {
+  width: 100%;
+  min-width: 0;
+  padding: 16px 12px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: white;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.input-row input::placeholder {
+  color: #898994;
+}
+
+.clear {
+  padding: 12px;
+  color: #ddd;
+  background: transparent;
+  border: 0;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.submit {
+  width: 100%;
+  min-height: 65px;
+  margin-top: 24px;
+  padding: 14px;
+  color: #f7f7fa;
+  background: linear-gradient(
+    145deg,
+    rgba(80,80,88,.65),
+    rgba(9,9,12,.96),
+    rgba(65,65,72,.55)
+  );
+  border: 1px solid #dddde4;
+  border-radius: 9px;
+  box-shadow:
+    inset 0 0 12px rgba(255,255,255,.12),
+    0 0 12px rgba(220,220,230,.12);
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.submit:hover {
+  box-shadow: 0 0 18px rgba(255,255,255,.22);
+}
+
+.submit:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.footer-line {
+  margin: 16px 0 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #d0d0d8;
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.footer-line::before,
+.footer-line::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, transparent, #aaa);
+}
+
+.footer-line::after {
+  background: linear-gradient(90deg, #aaa, transparent);
+}
+
+.result {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 18px;
+  background: rgba(3,3,5,.91);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 0 24px rgba(0,0,0,.75);
+  backdrop-filter: blur(10px);
+}
+
+.result[hidden] {
+  display: none;
+}
+
+.result-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #dddde4;
+}
+
+.close {
+  background: transparent;
+  color: #eee;
+  border: 0;
+  font-size: 23px;
+  cursor: pointer;
+}
+
+.phone-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+  font-size: 12px;
+}
+
+.status {
+  display: inline-block;
+  padding: 8px 10px;
+  border: 1px solid #686872;
+  border-radius: 30px;
+  color: #dddde4;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.analysis {
+  text-align: center;
+  padding: 25px 12px;
+  border: 1px solid #575760;
+  border-radius: 13px;
+  background: rgba(0,0,0,.45);
+}
+
+.analysis-symbol {
+  font-size: 23px;
+  margin-bottom: 12px;
+  color: #eee;
+}
+
+.analysis-title {
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.analysis-message {
+  margin-top: 8px;
+  color: #bcbcc6;
+  font-size: 12px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.signature {
+  text-align: center;
+  margin-top: 20px;
+  color: #c9c9d1;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  line-height: 1.8;
+}
+
+.truth {
+  margin: 28px auto 0;
+  text-align: center;
+  color: #d1d1d8;
+  font-size: 9px;
+  letter-spacing: 2px;
+  line-height: 2;
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 14px 10px 24px;
+  }
+
+  .hero {
+    margin-top: 28vh;
+  }
+
+  .card,
+  .result {
+    padding: 13px;
+  }
+
+  .card-head {
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+
+  .submit {
+    letter-spacing: 2px;
+  }
+
+  body::before {
+    background-position: center top;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<main class="page">
+
+  <header class="top">
+    <div class="brand">
+      <span class="brand-mark">✧</span>
+      <span>VAELMOR FAMILY</span>
+    </div>
+    <div class="top-right">VAELMOR VERDICT</div>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">
+      VÉRIFICATION DE STATUT WHATSAPP
+    </div>
+    <div class="subkicker">
+      RÉSULTATS NON CONFIRMÉS SIGNALÉS
+    </div>
+
+    <div class="ornament">✧ ━━━━━ ✧</div>
+
+    <section class="card" aria-label="Vérification">
+      <div class="card-head">
+        <div class="target">
+          <span class="target-icon">⊕</span>
+          <span>CIBLE À JUGER</span>
+        </div>
+        <span>VLM ·</span>
+      </div>
+
+      <form id="check-form">
+        <div class="input-row">
+          <span class="intl">◎ INTL</span>
+          <input
+            id="number"
+            name="number"
+            type="tel"
+            inputmode="numeric"
+            autocomplete="tel"
+            maxlength="20"
+            placeholder="Numéro international"
+            aria-label="Numéro international"
+            required
+          >
+          <button class="clear" id="clear" type="button"
+            aria-label="Effacer le numéro">×</button>
+        </div>
+
+        <button class="submit" id="submit" type="submit">
+          ✧ &nbsp; [ JUGER LA CIBLE ] &nbsp; ✧
+        </button>
+      </form>
+    </section>
+
+    <div class="footer-line">
+      VAELMOR · VERDICT · VÉRIFICATION
+    </div>
+
+    <section class="result" id="result" aria-live="polite" hidden>
+      <div class="result-head">
+        <span>✧ &nbsp; VERDICT RENDU &nbsp; ✧</span>
+        <button class="close" id="close" type="button"
+          aria-label="Fermer le résultat">×</button>
+      </div>
+
+      <div class="phone-line">
+        <strong id="phone-result">—</strong>
+        <span id="time-result"></span>
+        <span class="status" id="status">EN ATTENTE</span>
+      </div>
+
+      <div class="analysis">
+        <div class="analysis-symbol" id="symbol">✧</div>
+        <div class="analysis-title" id="result-title">
+          En attente de vérification.
+        </div>
+        <div class="analysis-message" id="result-message">
+          Aucun verdict n’a encore été rendu.
+        </div>
+      </div>
+
+      <div class="signature">
+        Off by 𓆩🌹 VAELMOR FAMILY 🕯️𓆪
+      </div>
+    </section>
+
+    <div class="truth">
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
+      LA VÉRITÉ N'EST JAMAIS UN HASARD
+    </div>
+  </section>
+</main>
+
+<script>
+const form = document.getElementById('check-form');
+const input = document.getElementById('number');
+const submit = document.getElementById('submit');
+const result = document.getElementById('result');
+
+const phoneResult = document.getElementById('phone-result');
+const timeResult = document.getElementById('time-result');
+const statusLabel = document.getElementById('status');
+const resultTitle = document.getElementById('result-title');
+const resultMessage = document.getElementById('result-message');
+const symbol = document.getElementById('symbol');
+
+function displayResult(status, phone, message) {
+  const details = {
+    INVALID_NUMBER: {
+      title: 'NUMÉRO INVALIDE',
+      message: 'Vérifie le numéro et son indicatif international.',
+      symbol: '!'
+    },
+    INDETERMINATE: {
+      title: 'STATUT INDÉTERMINÉ',
+      message: 'Aucune preuve fiable ne permet de confirmer le statut de bannissement. Vérifie le compte directement dans WhatsApp.',
+      symbol: '✧'
+    },
+    ERROR: {
+      title: 'VÉRIFICATION IMPOSSIBLE',
+      message: 'Le serveur n’a pas pu traiter la demande. Aucun verdict n’a été inventé.',
+      symbol: '!'
+    }
+  };
+
+  const data = details[status] || details.INDETERMINATE;
+
+  phoneResult.textContent = phone || 'Numéro non disponible';
+  timeResult.textContent = new Date().toLocaleTimeString('fr-FR');
+  statusLabel.textContent = status;
+  resultTitle.textContent = data.title;
+  resultMessage.textContent = message || data.message;
+  symbol.textContent = data.symbol;
+
+  result.hidden = false;
+}
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const digits = input.value.replace(/\D/g, '');
+
+  if (digits.length < 8 || digits.length > 15) {
+    displayResult(
+      'INVALID_NUMBER',
+      digits ? '+' + digits : '—'
+    );
     return;
   }
 
-  button.disabled = true;
-  button.textContent = '[ VÉRIFICATION EN COURS… ]';
+  submit.disabled = true;
+  submit.textContent = '[ VÉRIFICATION EN COURS… ]';
 
-  document.getElementById('ti').textContent = 'VÉRIFICATION EN COURS';
-  document.getElementById('qt').textContent =
-    'Attente de la réponse du serveur…';
-  document.getElementById('bd').textContent = 'EN COURS';
-  document.getElementById('ph').textContent = '+' + digits;
-  overlay.classList.add('show');
+  displayResult(
+    'INDETERMINATE',
+    '+' + digits,
+    'Connexion au serveur… le statut du compte n’est pas encore confirmé.'
+  );
 
   try {
-    const response = await fetch('/api/check/' + encodeURIComponent(digits));
+    const response = await fetch(
+      '/api/check/' + encodeURIComponent(digits),
+      { headers: { 'Accept': 'application/json' } }
+    );
+
     const data = await response.json();
 
-    showResult(
+    if (!response.ok) {
+      displayResult(
+        data.status || 'ERROR',
+        data.phone || '+' + digits,
+        data.message || 'La demande n’a pas pu être traitée.'
+      );
+      return;
+    }
+
+    displayResult(
       data.status || 'INDETERMINATE',
-      data.phone || ('+' + digits),
+      data.phone || '+' + digits,
       data.message
     );
-  } catch (error) {
-    showResult(
-      'INDETERMINATE',
+  } catch {
+    displayResult(
+      'ERROR',
       '+' + digits,
-      'Impossible de joindre le serveur. Aucun verdict n’a été inventé.'
+      'Impossible de joindre le serveur. Vérifie ta connexion puis réessaie.'
     );
   } finally {
-    button.disabled = false;
-    button.textContent = '[ JUGER LA CIBLE ]';
+    submit.disabled = false;
+    submit.textContent = '✧  [ JUGER LA CIBLE ]  ✧';
   }
 });
 
 document.getElementById('clear').addEventListener('click', () => {
-  numberInput.value = '';
-  numberInput.focus();
+  input.value = '';
+  input.focus();
 });
 
-document.getElementById('cx').addEventListener('click', () => {
-  overlay.classList.remove('show');
-});
-
-overlay.addEventListener('click', event => {
-  if (event.target === overlay) overlay.classList.remove('show');
+document.getElementById('close').addEventListener('click', () => {
+  result.hidden = true;
 });
 </script>
 </body>
