@@ -1,13 +1,17 @@
 {
   "name": "vaelmor-verdict",
   "version": "2.1.0",
-  "description": "VAELMOR VERDICT - Interface de vérification du statut WhatsApp",
+  "description": "VAELMOR VERDICT - Pont Bot WhatsApp & Interface",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "@whiskeysockets/baileys": "^6.7.8",
+    "express": "^4.19.2",
+    "pino": "^9.0.0",
+    "qrcode-terminal": "^0.12.0"
   }
 }
+
 
